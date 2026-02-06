@@ -1,6 +1,4 @@
-# Multi-stage build for AI Film Studio
-
-# Stage 1: Build stage
+# Build stage
 FROM node:22-alpine AS builder
 
 WORKDIR /app
@@ -8,48 +6,46 @@ WORKDIR /app
 # Install build dependencies
 RUN apk add --no-cache python3 make g++ cairo-dev jpeg-dev pango-dev giflib-dev pixman-dev
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Install pnpm
+RUN npm install -g pnpm
 
-# Install dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Copy only package.json first
+COPY package.json ./
 
-# Copy source code
+# Install dependencies (this will create pnpm-lock.yaml)
+RUN pnpm install
+
+# Copy the rest of the source code
 COPY . .
 
-# Build application
-RUN pnpm build
+# Build the application
+RUN pnpm run build
 
-# Stage 2: Runtime stage
+# Runtime stage
 FROM node:22-alpine
 
 WORKDIR /app
 
-# Install runtime dependencies
-RUN apk add --no-cache ffmpeg
+# Install pnpm for runtime
+RUN npm install -g pnpm
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Copy package.json
+COPY package.json ./
 
 # Install production dependencies only
-RUN npm install -g pnpm && pnpm install --frozen-lockfile --prod
+RUN pnpm install --prod
 
-# Copy built application from builder
+# Copy built files from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/client/dist ./client/dist
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-USER nodejs
-
-# Expose port
-EXPOSE 3000
+# Set environment
+ENV NODE_ENV=production
+ENV PORT=8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+  CMD node -e "require('http').get('http://localhost:8080/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-# Start application
+# Start the application
 CMD ["node", "dist/index.js"]
