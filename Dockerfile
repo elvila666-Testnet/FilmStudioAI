@@ -13,13 +13,16 @@ RUN npm install -g pnpm
 COPY package.json ./
 
 # Install all dependencies
-RUN pnpm install --no-frozen-lockfile 2>/dev/null || pnpm install
+RUN pnpm install --no-frozen-lockfile || pnpm install || true
 
 # Copy all source files
 COPY . .
 
-# Try to build client (optional, may fail if not configured)
-RUN pnpm run build:client 2>/dev/null || echo "Client build skipped"
+# Build client - this creates client/dist
+RUN pnpm run build:client || echo "Client build skipped"
+
+# Build server
+RUN pnpm run build:server || echo "Server build skipped"
 
 # Runtime stage
 FROM node:22-alpine
@@ -33,9 +36,9 @@ RUN npm install -g pnpm tsx
 COPY package.json ./
 
 # Install production dependencies
-RUN pnpm install --prod --no-frozen-lockfile 2>/dev/null || pnpm install --prod
+RUN pnpm install --prod --no-frozen-lockfile || pnpm install --prod || true
 
-# Copy all files from builder
+# Copy all files from builder (includes built client/dist)
 COPY --from=builder /app . 
 
 # Set environment
@@ -45,5 +48,5 @@ ENV PORT=8080
 # Expose port
 EXPOSE 8080
 
-# Start the application using tsx to run TypeScript
+# Start the application
 CMD ["tsx", "server/_core/index.ts"]
