@@ -51,18 +51,7 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
     waitFor: ['push-image']
 
-  # Step 4: Run database migrations
-  - name: 'gcr.io/cloud-builders/gke-deploy'
-    id: 'run-migrations'
-    args:
-      - 'run'
-      - '--filename=.'
-      - '--image=gcr.io/$PROJECT_ID/ai-film-studio:$SHORT_SHA'
-      - '--location=us-central1'
-      - '--output=/workspace/output'
-    env:
-      - 'DATABASE_URL=${_DATABASE_URL}'
-    waitFor: ['deploy-cloud-run']
+
 
 # Images to be pushed to Container Registry
 images:
