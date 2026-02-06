@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,26 +24,44 @@ app.get("/api/test", (_req, res) => {
   res.status(200).json({ message: "AI Film Studio API is working!" });
 });
 
-// Serve static files from client dist
-const clientPath = path.join(process.cwd(), "dist/client");
-;
+// Determine client path - try multiple locations
+let clientPath = "";
+const possiblePaths = [
+  path.join(process.cwd(), "dist/client"),
+  path.join(__dirname, "../../dist/client"),
+  path.join(__dirname, "../../../dist/client"),
+  "/app/dist/client",
+];
 
-// IMPORTANT: Serve static files with proper caching
-app.use(express.static(clientPath, { 
-  maxAge: "1y", 
+for (const p of possiblePaths) {
+  if (fs.existsSync(p)) {
+    clientPath = p;
+    console.log(`✅ Found client files at: ${clientPath}`);
+    break;
+  }
+}
+
+if (!clientPath) {
+  console.error("❌ Could not find client files in any of these locations:");
+  possiblePaths.forEach(p => console.error(`   - ${p}`));
+  process.exit(1);
+}
+
+// Serve static files
+app.use(express.static(clientPath, {
+  maxAge: "1y",
   immutable: true,
-  setHeaders: (res, path) => {
-    // Don't cache index.html
-    if (path.endsWith('index.html')) {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('index.html')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
   }
 }));
 
-// SPA fallback - serve index.html for all unmatched routes
-// This should only catch routes, not asset requests
+// SPA fallback
 app.get("*", (_req, res) => {
-  res.sendFile(path.join(clientPath, "index.html"), (err) => {
+  const indexPath = path.join(clientPath, "index.html");
+  res.sendFile(indexPath, (err) => {
     if (err) {
       console.error("Error serving index.html:", err);
       res.status(404).json({ error: "Not found" });
@@ -52,9 +71,9 @@ app.get("*", (_req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}/`);
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`🎬 App: http://localhost:${PORT}/`);
+  console.log(`✅ Server running on http://localhost:${PORT}/` );
+  console.log(`📊 Health check: http://localhost:${PORT}/api/health` );
+  console.log(`🎬 App: http://localhost:${PORT}/` );
   console.log(`📁 Serving static files from: ${clientPath}`);
 });
 
