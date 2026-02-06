@@ -24,7 +24,8 @@ app.get("/api/test", (_req, res) => {
 });
 
 // Serve static files from client dist
-const clientPath = path.join(__dirname, "../../client/dist");
+const clientPath = path.join(process.cwd(), "dist/client");
+;
 
 // IMPORTANT: Serve static files with proper caching
 app.use(express.static(clientPath, { 
