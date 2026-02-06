@@ -1,0 +1,118 @@
+================================================================================
+AI FILM STUDIO - QUICK REFERENCE FOR WINDOWS
+================================================================================
+
+WHAT WAS WRONG:
+- package.json was missing (no dependencies installed)
+- server/_core/index.ts didn't mount tRPC router (API not working)
+- Result: Only "Frontend OK" screen, no actual app
+
+WHAT'S FIXED:
+✓ package.json - Complete with all tRPC dependencies
+✓ server/_core/index.ts - tRPC router mounted at /api/trpc
+✓ Dockerfile - Production-ready container
+✓ vite.config.ts - Build configuration
+✓ tsconfig.json - TypeScript configuration
+
+================================================================================
+3 SIMPLE STEPS TO DEPLOY:
+================================================================================
+
+STEP 1: Copy Files to Your Local Repository
+- Copy package.json to C:\ai_film_studio\
+- Copy Dockerfile to C:\ai_film_studio\
+- Copy vite.config.ts to C:\ai_film_studio\
+- Copy tsconfig.json to C:\ai_film_studio\
+- Copy server-index.ts to C:\ai_film_studio\server\_core\index.ts
+
+STEP 2: Commit to GitHub (PowerShell)
+cd C:\ai_film_studio
+git add .
+git commit -m "Fix: Add missing package.json and mount tRPC router"
+git push origin main
+
+STEP 3: Deploy to Cloud Run (PowerShell)
+gcloud run deploy ai-film-studio `
+  --source . `
+  --region us-central1 `
+  --platform managed `
+  --memory 2Gi `
+  --cpu 2 `
+  --timeout 3600 `
+  --allow-unauthenticated `
+  --project ai-films-prod `
+  --set-env-vars NODE_ENV=production,CLOUD_SQL_CONNECTION_NAME=ai-films-prod:us-central1:ai-film-studio-db,CLOUD_SQL_DATABASE=ai_film_studio_prod,CLOUD_SQL_USER=prod_user,CLOUD_SQL_PASSWORD=Libra.2024
+
+STEP 4: Get Your URL
+gcloud run services describe ai-film-studio `
+  --region us-central1 `
+  --project ai-films-prod `
+  --format='value(status.url)'
+
+Open that URL in your browser!
+
+================================================================================
+FILE DESCRIPTIONS:
+================================================================================
+
+package.json
+- Lists all Node.js dependencies
+- Includes tRPC, React, Express, database libraries
+- THIS WAS MISSING - that's why the app didn't work!
+
+server-index.ts (goes to server/_core/index.ts)
+- Express server with tRPC middleware
+- Mounts API at /api/trpc
+- THIS WAS BROKEN - tRPC wasn't being served!
+
+Dockerfile
+- Container configuration for Cloud Run
+- Multi-stage build for optimization
+- Health checks configured
+
+vite.config.ts
+- Vite build configuration
+- React plugin setup
+- Path aliases for imports
+
+tsconfig.json
+- TypeScript configuration
+- Strict mode enabled
+- Path aliases
+
+.dockerignore
+- Tells Docker what files to exclude
+- Reduces image size
+
+.gitignore
+- Tells Git what files to ignore
+- Prevents committing build artifacts
+
+================================================================================
+VERIFICATION:
+================================================================================
+
+After deployment, you should see:
+1. Frontend loads at https://YOUR_SERVICE_URL
+2. No "Frontend OK" screen
+3. Full AI Film Studio application
+4. API responding at /api/health
+
+If still seeing "Frontend OK":
+1. Check git push succeeded
+2. Check gcloud deployment completed
+3. Check logs: gcloud run services logs read ai-film-studio --region us-central1 --project ai-films-prod --limit 50
+
+================================================================================
+IMPORTANT NOTES:
+================================================================================
+
+- Make sure you're using PowerShell (not Command Prompt)
+- Use backticks (`) for line continuation in PowerShell
+- Replace YOUR_SERVICE_URL with the actual URL from Step 4
+- Database password is: Libra.2024
+- Project ID is: ai-films-prod
+
+================================================================================
+STATUS: READY TO DEPLOY
+================================================================================

@@ -1,0 +1,244 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Production-grade dark theme - Nuke/FLOW inspired */
+  --radius: 0.35rem;
+  
+  /* Dark background palette */
+  --background: #1a1a1a;
+  --foreground: #e8e8e8;
+  --card: #242424;
+  --card-foreground: #e8e8e8;
+  --popover: #2d2d2d;
+  --popover-foreground: #e8e8e8;
+  
+  /* Professional accent colors */
+  --primary: #00a8ff;
+  --primary-foreground: #0a0a0a;
+  --secondary: #ff6b35;
+  --secondary-foreground: #0a0a0a;
+  --accent: #00d9ff;
+  --accent-foreground: #0a0a0a;
+  
+  /* Muted colors for secondary UI */
+  --muted: #3d3d3d;
+  --muted-foreground: #a0a0a0;
+  
+  /* Destructive/warning colors */
+  --destructive: #ff4444;
+  --destructive-foreground: #0a0a0a;
+  
+  /* Borders and inputs */
+  --border: #3a3a3a;
+  --input: #2d2d2d;
+  --ring: #00a8ff;
+  
+  /* Sidebar styling */
+  --sidebar: #1f1f1f;
+  --sidebar-foreground: #e8e8e8;
+  --sidebar-primary: #00a8ff;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #00d9ff;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #3a3a3a;
+  --sidebar-ring: #00a8ff;
+  
+  /* Chart colors for production tracking */
+  --chart-1: #00a8ff;
+  --chart-2: #ff6b35;
+  --chart-3: #00d9ff;
+  --chart-4: #ffd700;
+  --chart-5: #00ff88;
+}
+
+.dark {
+  /* Already dark by default, but explicit for clarity */
+  --background: #1a1a1a;
+  --foreground: #e8e8e8;
+  --card: #242424;
+  --card-foreground: #e8e8e8;
+  --popover: #2d2d2d;
+  --popover-foreground: #e8e8e8;
+  --primary: #00a8ff;
+  --primary-foreground: #0a0a0a;
+  --secondary: #ff6b35;
+  --secondary-foreground: #0a0a0a;
+  --accent: #00d9ff;
+  --accent-foreground: #0a0a0a;
+  --muted: #3d3d3d;
+  --muted-foreground: #a0a0a0;
+  --destructive: #ff4444;
+  --destructive-foreground: #0a0a0a;
+  --border: #3a3a3a;
+  --input: #2d2d2d;
+  --ring: #00a8ff;
+  --sidebar: #1f1f1f;
+  --sidebar-foreground: #e8e8e8;
+  --sidebar-primary: #00a8ff;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #00d9ff;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #3a3a3a;
+  --sidebar-ring: #00a8ff;
+  --chart-1: #00a8ff;
+  --chart-2: #ff6b35;
+  --chart-3: #00d9ff;
+  --chart-4: #ffd700;
+  --chart-5: #00ff88;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+  
+  /* Production-grade typography */
+  h1 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  h3 {
+    @apply text-lg font-semibold tracking-tight;
+  }
+  
+  /* Code/monospace for technical content */
+  code {
+    @apply font-mono text-sm bg-muted px-2 py-1 rounded;
+  }
+}
+
+@layer components {
+  /* Production node styling */
+  .production-node {
+    @apply bg-card border border-border rounded-sm shadow-lg hover:shadow-xl transition-shadow;
+  }
+  
+  .production-node-header {
+    @apply bg-muted px-3 py-2 border-b border-border flex items-center justify-between;
+  }
+  
+  .production-node-title {
+    @apply text-sm font-semibold text-accent uppercase tracking-wide;
+  }
+  
+  .production-status {
+    @apply inline-flex items-center gap-1 text-xs font-medium;
+  }
+  
+  .status-pending {
+    @apply text-yellow-400;
+  }
+  
+  .status-in-progress {
+    @apply text-blue-400;
+  }
+  
+  .status-complete {
+    @apply text-green-400;
+  }
+  
+  .status-error {
+    @apply text-red-400;
+  }
+  
+  /* Production workflow visualization */
+  .workflow-container {
+    @apply grid gap-4 p-4 bg-background;
+  }
+  
+  .workflow-stage {
+    @apply flex flex-col gap-2;
+  }
+  
+  .workflow-stage-label {
+    @apply text-xs font-bold text-muted-foreground uppercase tracking-widest;
+  }
+  
+  /* Container utility */
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+}
